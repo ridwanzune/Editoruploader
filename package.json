@@ -2,6 +2,7 @@
   "name": "dhaka-dispatch-editorial-board",
   "version": "1.0.0",
   "description": "Generate, schedule, and publish news snippets directly to socials.",
+  "source": "index.html",
   "dependencies": {
     "@google/genai": "^1.11.0",
     "html-to-image": "^1.11.11",
@@ -9,10 +10,14 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "serve": "^14.2.3"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "parcel": "^2.12.0",
+    "process": "^0.11.10",
+    "typescript": "^5.5.3"
   },
   "scripts": {
-    "start": "serve .",
-    "build": "echo \"No build step required for this ESM setup\""
+    "start": "parcel",
+    "build": "parcel build --dist-dir build"
   }
 }
