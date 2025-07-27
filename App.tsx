@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { NewsData, WebhookPayload, FoundArticle, ProcessedArticle, GroundingChunk } from './types';
@@ -14,7 +15,7 @@ import AIPromptModal from './components/AIPromptModal';
 import ImageFinderModal from './components/ImageFinderModal';
 import Instructions from './components/Instructions';
 import { CheckCircleIcon, ExclamationTriangleIcon, LoadingSpinnerIcon, FacebookIcon, EyeIcon, EyeSlashIcon } from './components/icons';
-import { DEFAULT_AUTH_TOKEN, DEFAULT_QUEUE_WEBHOOK_URL, DEFAULT_POST_NOW_WEBHOOK_URL, DEFAULT_GEMINI_API_KEY } from './constants';
+import { DEFAULT_AUTH_TOKEN, DEFAULT_QUEUE_WEBHOOK_URL, DEFAULT_POST_NOW_WEBHOOK_URL } from './constants';
 
 // --- Inlined Login Component ---
 interface LoginProps {
@@ -110,8 +111,7 @@ const App: React.FC = () => {
   const [queueWebhookUrl, setQueueWebhookUrl] = useState(() => localStorage.getItem('queueWebhookUrl') || DEFAULT_QUEUE_WEBHOOK_URL);
   const [postNowWebhookUrl, setPostNowWebhookUrl] = useState(() => localStorage.getItem('postNowWebhookUrl') || DEFAULT_POST_NOW_WEBHOOK_URL);
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('authToken') || DEFAULT_AUTH_TOKEN);
-  const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('geminiApiKey') || DEFAULT_GEMINI_API_KEY);
-
+  
   // Content State (for controlled form)
   const [headline, setHeadline] = useState('');
   const [headlineFontSize, setHeadlineFontSize] = useState<number>(48);
@@ -162,10 +162,6 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('authToken', authToken);
   }, [authToken]);
-
-  useEffect(() => {
-    localStorage.setItem('geminiApiKey', geminiApiKey);
-  }, [geminiApiKey]);
   
   const clearResults = () => {
     setSummary(null);
@@ -490,8 +486,6 @@ const App: React.FC = () => {
                 onPostNowWebhookUrlChange={setPostNowWebhookUrl}
                 authToken={authToken}
                 onAuthTokenChange={setAuthToken}
-                geminiApiKey={geminiApiKey}
-                onGeminiApiKeyChange={setGeminiApiKey}
               />
 
               <Instructions />

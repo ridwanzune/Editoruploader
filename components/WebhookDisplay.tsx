@@ -8,8 +8,6 @@ interface WebhookDisplayProps {
     onPostNowWebhookUrlChange: (url: string) => void;
     authToken: string;
     onAuthTokenChange: (token: string) => void;
-    geminiApiKey: string;
-    onGeminiApiKeyChange: (key: string) => void;
 }
 
 const WebhookDisplay: React.FC<WebhookDisplayProps> = ({ 
@@ -19,12 +17,9 @@ const WebhookDisplay: React.FC<WebhookDisplayProps> = ({
     onPostNowWebhookUrlChange, 
     authToken, 
     onAuthTokenChange,
-    geminiApiKey,
-    onGeminiApiKeyChange
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [showToken, setShowToken] = useState(false);
-    const [showGeminiKey, setShowGeminiKey] = useState(false);
 
   return (
     <div className="bg-white/50 border-2 border-gray-900">
@@ -51,6 +46,7 @@ const WebhookDisplay: React.FC<WebhookDisplayProps> = ({
         <div className="p-4 border-t-2 border-gray-900 space-y-4">
           <p className="text-sm text-gray-900/80">
             To send data, create an automation in a service like <a href="https://make.com" target="_blank" rel="noopener noreferrer" className="text-red-600 font-bold hover:underline">Make.com</a>. Use their "Webhook" trigger and connect it to a "Google Sheets - Add a Row" action.
+            The Gemini API Key is now set via the `API_KEY` environment variable in your Vercel project for security.
           </p>
           <div>
             <label htmlFor="postNowWebhookUrl" className="block text-sm font-bold text-gray-900/80 mb-1">
@@ -100,28 +96,6 @@ const WebhookDisplay: React.FC<WebhookDisplayProps> = ({
               </button>
             </div>
           </div>
-           <div>
-                <label htmlFor="geminiApiKey" className="block text-sm font-bold text-gray-900/80 mb-1">
-                    Gemini API Key
-                </label>
-                <div className="flex items-center space-x-2">
-                    <input
-                      id="geminiApiKey"
-                      type={showGeminiKey ? 'text' : 'password'}
-                      value={geminiApiKey}
-                      onChange={(e) => onGeminiApiKeyChange(e.target.value)}
-                      placeholder="Paste your Gemini API key"
-                      className="flex-grow bg-white text-gray-800 font-mono text-sm py-2 px-3 border-2 border-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition"
-                    />
-                    <button
-                        onClick={() => setShowGeminiKey(!showGeminiKey)}
-                        className="p-2 border-2 border-gray-900 bg-gray-200 hover:bg-gray-300 text-gray-800 transition"
-                        title={showGeminiKey ? "Hide Key" : "Show Key"}
-                    >
-                        {showGeminiKey ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-                    </button>
-                </div>
-            </div>
         </div>
       )}
     </div>

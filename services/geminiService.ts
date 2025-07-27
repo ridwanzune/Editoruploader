@@ -1,19 +1,14 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { FoundArticle, ProcessedArticle, GroundingChunk } from '../types';
-import { DEFAULT_GEMINI_API_KEY } from '../constants';
 
 /**
- * Creates a GoogleGenAI client instance using the API key from local storage
- * or a default key. This allows the API key to be changed dynamically by the user.
+ * Creates a GoogleGenAI client instance using the API key from an environment variable.
+ * The `API_KEY` is expected to be available in the execution environment (e.g., Vercel project settings).
  * @returns An initialized GoogleGenAI client.
  */
 const getAiClient = (): GoogleGenAI => {
-    const apiKey = localStorage.getItem('geminiApiKey') || DEFAULT_GEMINI_API_KEY;
-    if (!apiKey) {
-        // This is a fallback and should not typically be hit if default is configured.
-        throw new Error("Gemini API Key is not configured. Please set it in the settings panel.");
-    }
-    return new GoogleGenAI({ apiKey });
+    // The API key MUST be obtained exclusively from the environment variable `process.env.API_KEY`.
+    return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 
