@@ -18,6 +18,7 @@ export interface FoundArticle {
   title: string;
   summary: string;
   imageQuery: string;
+  publicationDate?: string; // e.g., "2024-08-15"
 }
 
 // Data from Google Search grounding
