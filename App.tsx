@@ -526,6 +526,7 @@ const App: React.FC = () => {
                 ref={previewRef}
                 newsData={newsDataForPreview}
                 summary={summary}
+                onSummaryChange={setSummary}
                 onQueue={handleQueue}
                 onPostNow={handlePostNow}
                 isLoading={isLoading}
