@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { NewsData, WebhookPayload, FoundArticle, ProcessedArticle, GroundingChunk } from './types';
@@ -41,16 +42,16 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-black/20 backdrop-blur-sm p-8 rounded-2xl border border-white/10 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+      <div className="w-full max-w-md bg-[#87ceeb] p-8 border-2 border-gray-900 shadow-neo-lg">
         <img
           src="https://res.cloudinary.com/dy80ftu9k/image/upload/v1753507647/scs_cqidjz.png"
           alt="Dhaka Dispatch Logo"
           className="h-20 w-auto mx-auto mb-6"
         />
-        <h1 className="text-2xl font-anton uppercase text-white text-center mb-2">
+        <h1 className="text-2xl font-anton uppercase text-gray-900 text-center mb-2">
           Editorial Board Access
         </h1>
-        <p className="text-center text-gray-300 mb-8">
+        <p className="text-center text-gray-800 mb-8">
           Please enter the password to continue.
         </p>
 
@@ -68,13 +69,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-black/20 border border-white/10 rounded-md shadow-sm py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition pr-12"
+                className="w-full bg-white border-2 border-gray-900 rounded-none shadow-sm py-3 px-4 text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition pr-12"
                 placeholder="Password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 hover:text-white"
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-gray-900"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeSlashIcon className="h-6 w-6" /> : <EyeIcon className="h-6 w-6" />}
@@ -83,13 +84,13 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           </div>
 
           {error && (
-            <p className="text-sm text-red-400 text-center">{error}</p>
+            <p className="text-sm text-red-600 text-center font-bold">{error}</p>
           )}
 
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 disabled:bg-gray-500 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(239,68,68,0.6)]"
+              className="w-full flex justify-center items-center py-3 px-4 border-2 border-gray-900 rounded-none text-sm font-bold text-white bg-red-600 hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-none"
             >
               Login
             </button>
@@ -113,6 +114,7 @@ const App: React.FC = () => {
 
   // Content State (for controlled form)
   const [headline, setHeadline] = useState('');
+  const [headlineFontSize, setHeadlineFontSize] = useState<number>(48);
   const [imageUrl, setImageUrl] = useState('');
   const [newsUrl, setNewsUrl] = useState('');
   const [summary, setSummary] = useState<string | null>(null);
@@ -447,12 +449,12 @@ const App: React.FC = () => {
       />
       {isProcessingNews && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-[100]">
-          <LoadingSpinnerIcon className="animate-spin h-10 w-10 text-red-400 mb-4" />
+          <LoadingSpinnerIcon className="animate-spin h-10 w-10 text-red-500 mb-4" />
           <p className="text-xl text-white">AI is preparing content...</p>
-          <p className="text-gray-400">Generating headline, summary, and finding image options.</p>
+          <p className="text-gray-300">Generating headline, summary, and finding image options.</p>
         </div>
       )}
-      <div className="min-h-screen text-gray-100 font-sans">
+      <div className="min-h-screen">
         <div className="max-w-7xl mx-auto">
           <header className="mb-8 text-center relative">
              <a 
@@ -460,7 +462,7 @@ const App: React.FC = () => {
               target="_blank" 
               rel="noopener noreferrer" 
               title="Dhaka Dispatch on Facebook"
-              className="absolute top-0 right-0 text-gray-400 hover:text-white transition-colors"
+              className="absolute top-0 right-0 text-gray-900 hover:text-white transition-colors"
             >
               <FacebookIcon className="h-8 w-8" />
             </a>
@@ -469,17 +471,17 @@ const App: React.FC = () => {
               alt="Dhaka Dispatch Logo" 
               className="h-20 w-auto mx-auto mb-4"
             />
-            <h1 className="text-4xl sm:text-5xl font-anton uppercase text-white [text-shadow:2px_2px_0_#000,4px_4px_8px_rgba(0,0,0,0.5)]">
+            <h1 className="text-4xl sm:text-5xl font-anton uppercase text-gray-900">
               Dhaka Dispatch Editorial Board
             </h1>
-            <p className="mt-2 text-lg text-gray-300">
+            <p className="mt-2 text-lg text-gray-800">
               Generate, schedule, and publish news snippets directly to socials.
             </p>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <div className="bg-black/20 backdrop-blur-sm p-6 rounded-2xl border border-white/10 lg:col-span-2 space-y-6 transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_35px_rgba(239,68,68,0.3)]">
-              <h2 className="text-2xl font-bold border-b border-white/20 pb-2">1. Configuration & Input</h2>
+            <div className="bg-[#a388ee] p-6 border-2 border-gray-900 shadow-neo-lg lg:col-span-2 space-y-6">
+              <h2 className="text-2xl font-bold border-b-2 border-gray-900 pb-2 text-black">1. Configuration & Input</h2>
               
               <WebhookDisplay
                 queueWebhookUrl={queueWebhookUrl}
@@ -507,18 +509,18 @@ const App: React.FC = () => {
               />
             </div>
 
-            <div className="bg-black/20 backdrop-blur-sm p-6 rounded-2xl border border-white/10 lg:col-span-3 transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_35px_rgba(239,68,68,0.3)]">
-              <h2 className="text-2xl font-bold mb-4 border-b border-white/20 pb-2">2. Preview & Publish</h2>
+            <div className="bg-[#f4d738] p-6 border-2 border-gray-900 shadow-neo-lg lg:col-span-3">
+              <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-900 pb-2 text-black">2. Preview & Publish</h2>
               {error && (
-                <div className="flex items-center bg-red-900/50 text-red-300 p-4 rounded-lg mb-4 border border-red-700">
-                    <ExclamationTriangleIcon className="h-6 w-6 mr-3"/>
-                    <span>{error}</span>
+                <div className="flex items-start bg-red-100 text-red-700 p-4 mb-4 border-2 border-red-700">
+                    <ExclamationTriangleIcon className="h-6 w-6 mr-3 flex-shrink-0 mt-0.5"/>
+                    <span className="font-semibold">{error}</span>
                 </div>
               )}
               {isApproved && (
-                  <div className="flex items-center bg-green-900/50 text-green-300 p-4 rounded-lg mb-4 border border-green-700">
+                  <div className="flex items-center bg-green-100 text-green-700 p-4 mb-4 border-2 border-green-700">
                       <CheckCircleIcon className="h-6 w-6 mr-3" />
-                      <span>Content sent successfully! Buttons will be re-enabled shortly.</span>
+                      <span className="font-semibold">Content sent successfully! Buttons will be re-enabled shortly.</span>
                   </div>
               )}
               <Preview
@@ -535,6 +537,8 @@ const App: React.FC = () => {
                 isGeneratingImage={isGeneratingImage}
                 headline={headline}
                 onHeadlineChange={setHeadline}
+                headlineFontSize={headlineFontSize}
+                onHeadlineFontSizeChange={setHeadlineFontSize}
                 imageUrlOptions={imageUrlOptions}
                 onImageUrlChange={setImageUrl}
               />

@@ -16,6 +16,8 @@ interface PreviewProps {
     isGeneratingImage: boolean;
     headline: string;
     onHeadlineChange: (value: string) => void;
+    headlineFontSize: number;
+    onHeadlineFontSizeChange: (size: number) => void;
     imageUrlOptions: string[];
     onImageUrlChange: (value: string) => void;
 }
@@ -91,6 +93,8 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
     isGeneratingImage,
     headline,
     onHeadlineChange,
+    headlineFontSize,
+    onHeadlineFontSizeChange,
     imageUrlOptions,
     onImageUrlChange
   },
@@ -107,9 +111,9 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-400">
-        <LoadingSpinnerIcon className="animate-spin h-10 w-10 mb-4 text-red-400" />
-        <p className="text-lg">Generating content with Gemini AI...</p>
+      <div className="flex flex-col items-center justify-center h-full text-gray-500">
+        <LoadingSpinnerIcon className="animate-spin h-10 w-10 mb-4 text-red-500" />
+        <p className="text-lg font-bold">Generating content with Gemini AI...</p>
         <p className="text-sm">This might take a moment.</p>
       </div>
     );
@@ -117,35 +121,53 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
 
   if (!newsData) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-gray-500 border-2 border-dashed border-white/20 rounded-lg p-8">
+      <div className="flex flex-col items-center justify-center h-full text-gray-500 border-2 border-dashed border-gray-400 p-8">
         <PhotographIcon className="h-16 w-16 mb-4" />
-        <p className="text-lg text-center">Your preview will appear here once you generate it.</p>
+        <p className="text-lg text-center font-bold">Your preview will appear here once you generate it.</p>
       </div>
     );
   }
 
   const canApprove = summary && !isSending && !isApproved;
+  const isPublishing = isSending || isApproved;
 
   return (
     <div className="space-y-6">
        {newsData && (
-        <div className="mb-4">
-            <label htmlFor="preview-headline" className="block text-sm font-medium text-gray-300 mb-1">
-                Edit Headline
-            </label>
-            <input
-                id="preview-headline"
-                type="text"
-                value={headline}
-                onChange={(e) => onHeadlineChange(e.target.value)}
-                placeholder="e.g., Groundbreaking Discovery on Mars"
-                className="w-full bg-black/20 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-            />
+        <div className="space-y-4 mb-4">
+            <div>
+                <label htmlFor="preview-headline" className="block text-sm font-bold text-gray-700 mb-1">
+                    Edit Headline
+                </label>
+                <input
+                    id="preview-headline"
+                    type="text"
+                    value={headline}
+                    onChange={(e) => onHeadlineChange(e.target.value)}
+                    placeholder="e.g., Groundbreaking Discovery on Mars"
+                    className="w-full bg-white border-2 border-gray-900 rounded-none shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition"
+                />
+            </div>
+            <div>
+                <label htmlFor="headline-size" className="block text-sm font-bold text-gray-700 mb-1">
+                    Headline Size: <span className="font-mono bg-white/70 px-1 py-0.5 border border-gray-900">{headlineFontSize}px</span>
+                </label>
+                <input
+                    id="headline-size"
+                    type="range"
+                    min="24"
+                    max="72"
+                    step="1"
+                    value={headlineFontSize}
+                    onChange={(e) => onHeadlineFontSizeChange(Number(e.target.value))}
+                    className="w-full h-3 bg-white appearance-none cursor-pointer border-2 border-gray-900 accent-red-600"
+                />
+            </div>
         </div>
      )}
-       <div className="flex flex-row items-center gap-4">
+       <div className="flex flex-row items-start gap-4">
             {/* The ref is applied to the main content container that will be captured as an image */}
-            <div ref={ref} className="bg-white shadow-lg aspect-square flex flex-col overflow-hidden flex-grow">
+            <div ref={ref} className="bg-white shadow-lg aspect-square flex flex-col overflow-hidden flex-grow border-2 border-gray-900">
                 {/* 
                   AI Content Generation Guidelines:
                   The final image will be a square.
@@ -156,7 +178,8 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
                 */}
                 <div className="h-[30%] bg-white p-4 flex flex-col justify-center relative">
                     <h3 
-                        className="font-anton text-3xl sm:text-4xl lg:text-5xl text-black text-center leading-tight tracking-wide uppercase"
+                        className="font-anton text-black text-center leading-tight tracking-wide uppercase"
+                        style={{ fontSize: `${headlineFontSize}px` }}
                     >
                         {renderHeadline(newsData.headline)}
                     </h3>
@@ -203,21 +226,21 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
 
       {imageUrlOptions && imageUrlOptions.length > 1 && (
         <div className="mt-4">
-          <h4 className="text-sm font-semibold text-gray-300 mb-2">Image Options:</h4>
-          <div className="flex gap-2 flex-wrap bg-black/20 p-2 rounded-md border border-white/10">
+          <h4 className="text-sm font-bold text-gray-700 mb-2">Image Options:</h4>
+          <div className="flex gap-2 flex-wrap bg-white/70 p-2 border-2 border-gray-900">
             {imageUrlOptions.map((url) => (
               <button
                 key={url}
                 onClick={() => onImageUrlChange(url)}
-                className={`rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-red-500 transition-all duration-200 hover:scale-105 ${
-                  newsData.imageUrl === url ? 'ring-2 ring-red-500' : ''
+                className={`rounded-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-200 focus:ring-red-500 transition-all duration-200 hover:scale-105 border-2 ${
+                  newsData.imageUrl === url ? 'border-red-500' : 'border-transparent'
                 }`}
                 aria-label="Select this image"
               >
                 <img
                   src={url}
                   alt="Alternative news visual"
-                  className="w-24 h-16 object-cover rounded-md cursor-pointer hover:opacity-80"
+                  className="w-24 h-16 object-cover cursor-pointer"
                    onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none'; // Hide broken images in options
@@ -230,30 +253,28 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
       )}
 
       <div>
-        <h4 className="text-lg font-semibold text-gray-300 mb-2">AI Generated Summary:</h4>
-        <div className="bg-black/20 p-4 rounded-md border border-white/10 min-h-[100px]">
+        <h4 className="text-lg font-bold text-gray-900 mb-2">AI Generated Summary:</h4>
+        <div className="bg-white p-4 border-2 border-gray-900 min-h-[100px]">
           {summary ? (
-             <p className="text-gray-300 italic whitespace-pre-wrap">{summary}</p>
+             <p className="text-gray-700 whitespace-pre-wrap">{summary}</p>
           ) : (
             <p className="text-gray-500">No summary generated yet.</p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t-2 border-black/20">
         <button
           onClick={onPostNow}
           disabled={!canApprove}
-          className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
+          className={`w-full flex justify-center items-center py-3 px-4 border-2 border-gray-900 rounded-none text-sm font-bold transition-all duration-200 ${
             isApproved
-              ? 'bg-green-600 text-white cursor-default'
-              : 'text-white bg-rose-600 hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 focus:ring-offset-gray-900 disabled:bg-gray-500 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(244,63,94,0.6)]'
+              ? 'bg-green-500 text-white cursor-default'
+              : 'text-white bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-none'
           }`}
         >
-          {isSending ? (
+          {isPublishing ? (
             <LoadingSpinnerIcon className="animate-spin h-5 w-5 mr-3" />
-          ) : isApproved ? (
-            <CheckCircleIcon className="h-5 w-5 mr-2" />
           ) : (
             <PaperAirplaneIcon className="h-5 w-5 mr-2" />
           )}
@@ -262,23 +283,21 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
         <button
           onClick={onQueue}
           disabled={!canApprove}
-          className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
+          className={`w-full flex justify-center items-center py-3 px-4 border-2 border-gray-900 rounded-none text-sm font-bold transition-all duration-200 ${
             isApproved
-              ? 'bg-green-600 text-white cursor-default'
-              : 'text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 disabled:bg-gray-500 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(239,68,68,0.6)]'
+              ? 'bg-green-500 text-white cursor-default'
+              : 'text-white bg-red-600 hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-none'
           }`}
         >
-          {isSending ? (
+          {isPublishing ? (
             <LoadingSpinnerIcon className="animate-spin h-5 w-5 mr-3" />
-          ) : isApproved ? (
-            <CheckCircleIcon className="h-5 w-5 mr-2" />
           ) : (
             <ClockIcon className="h-5 w-5 mr-2" />
           )}
           {isApproved ? 'Sent!' : 'Queue'}
         </button>
       </div>
-      <p className="text-xs text-center text-gray-400 mt-2">
+      <p className="text-xs text-center text-gray-800 mt-2">
         Queued posts are published twice daily at <strong>3 PM</strong> and <strong>7 PM</strong>.
       </p>
     </div>

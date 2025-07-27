@@ -26,28 +26,28 @@ const AIPromptModal: React.FC<AIPromptModalProps> = ({ isOpen, onClose, initialP
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300" onClick={onClose}>
-      <div className="bg-gray-900/80 backdrop-blur-md rounded-2xl w-full max-w-2xl border border-white/10 shadow-[0_0_25px_rgba(239,68,68,0.3)]" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-center p-4 border-b border-white/10">
-          <h2 className="text-xl font-bold text-white">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300" onClick={onClose}>
+      <div className="bg-[#a388ee] rounded-none w-full max-w-2xl border-2 border-gray-900 shadow-neo-lg" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center p-4 border-b-2 border-gray-900">
+          <h2 className="text-xl font-bold text-gray-900">
             Edit AI Image Prompt
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-2 rounded-full -mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-900 transition-colors p-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label htmlFor="ai-prompt" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="ai-prompt" className="block text-sm text-black/80 mb-2">
               You can edit the prompt below before generating the image. The AI has been instructed to create a landscape image with no text.
             </label>
             <textarea
               id="ai-prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="w-full h-48 bg-black/20 border border-white/10 rounded-md shadow-sm p-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+              className="w-full h-48 bg-white border-2 border-gray-900 rounded-none shadow-sm p-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition"
               required
             />
           </div>
@@ -55,7 +55,7 @@ const AIPromptModal: React.FC<AIPromptModalProps> = ({ isOpen, onClose, initialP
             <button
               type="submit"
               disabled={isGenerating || !prompt}
-              className="flex justify-center items-center py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 disabled:bg-gray-500 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5"
+              className="flex justify-center items-center py-2 px-6 border-2 border-gray-900 rounded-none text-sm font-bold text-white bg-red-600 hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-none"
             >
               {isGenerating ? (
                 <>

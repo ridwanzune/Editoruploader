@@ -65,37 +65,37 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300"
+      className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300"
       onClick={onClose}
     >
       <div 
-        className="bg-gray-900/80 backdrop-blur-md rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col border border-white/10 shadow-[0_0_25px_rgba(239,68,68,0.3)]"
+        className="bg-[#87ceeb] rounded-none w-full max-w-5xl max-h-[90vh] flex flex-col border-2 border-gray-900 shadow-neo-lg"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b border-white/10 flex-shrink-0">
-          <h2 className="text-xl font-bold text-white">
+        <div className="flex justify-between items-center p-4 border-b-2 border-gray-900 flex-shrink-0">
+          <h2 className="text-xl font-bold text-gray-900">
             Find an Image
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-2 rounded-full -mr-2">
-             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-900 transition-colors p-1">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         
-        <div className="p-4 border-b border-white/10 flex flex-shrink-0 items-center gap-4">
+        <div className="p-4 border-b-2 border-gray-900 flex flex-shrink-0 items-center gap-4 bg-white/50">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch(query)}
             placeholder="Search for an image..."
-            className="w-full bg-black/20 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+            className="w-full bg-white border-2 border-gray-900 rounded-none py-2 px-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition"
           />
           <button 
             onClick={() => handleSearch(query)} 
             disabled={isLoading || !query} 
-            className="flex-shrink-0 justify-center items-center py-2 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 disabled:bg-gray-500 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5"
+            className="flex-shrink-0 justify-center items-center py-2.5 px-6 border-2 border-gray-900 rounded-none text-sm font-bold text-white bg-red-600 hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-neo hover:-translate-x-1 hover:-translate-y-1 hover:shadow-none"
           >
             {isLoading ? 'Searching...' : 'Search'}
           </button>
@@ -104,11 +104,11 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
         <div className="p-6 overflow-y-auto">
           {isLoading ? (
             <div className="flex flex-col justify-center items-center h-64 text-center">
-              <LoadingSpinnerIcon className="animate-spin h-10 w-10 text-red-400" />
-              <p className="mt-4 text-lg">Searching for images...</p>
+              <LoadingSpinnerIcon className="animate-spin h-10 w-10 text-red-500" />
+              <p className="mt-4 text-lg font-bold">Searching for images...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-10 text-red-400">{error}</div>
+            <div className="text-center py-10 text-red-600 font-bold">{error}</div>
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -116,7 +116,7 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
                   <button 
                     key={`${url}-${index}`}
                     onClick={() => onSelect(url)} 
-                    className="aspect-w-1 aspect-h-1 block bg-black/10 rounded-lg overflow-hidden group focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-red-500 transition-transform duration-200 hover:scale-105"
+                    className="aspect-w-1 aspect-h-1 block bg-gray-200 overflow-hidden group focus:outline-none transition-transform duration-200 hover:scale-105 border-2 border-gray-900 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     <img 
                       src={url} 
@@ -129,12 +129,12 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
                 ))}
               </div>
               {results.length > 0 && sources.length > 0 && (
-                <div className="mt-6 pt-4 border-t border-white/10">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-2">Sources used by AI for this image search:</h4>
+                <div className="mt-6 pt-4 border-t-2 border-black/20">
+                  <h4 className="text-sm font-bold text-gray-900 mb-2">Sources used by AI for this image search:</h4>
                   <ul className="space-y-1 list-disc list-inside">
                     {sources.map((source, index) => (
-                      source.web && <li key={index} className="text-xs text-gray-400 truncate">
-                        <a href={source.web.uri} target="_blank" rel="noopener noreferrer" className="hover:text-red-400 hover:underline">
+                      source.web && <li key={index} className="text-xs text-gray-900/70 truncate">
+                        <a href={source.web.uri} target="_blank" rel="noopener noreferrer" className="hover:text-red-500 hover:underline">
                           {source.web.title || source.web.uri}
                         </a>
                       </li>
