@@ -41,7 +41,7 @@ const AIPromptModal: React.FC<AIPromptModalProps> = ({ isOpen, onClose, initialP
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label htmlFor="ai-prompt" className="block text-sm text-black/80 mb-2">
-              You can edit the prompt below before generating the image. The AI has been instructed to create a landscape image with no text.
+              You can edit the prompt below before generating the image. The AI has been instructed to create a square (1:1) image with no text.
             </label>
             <textarea
               id="ai-prompt"
