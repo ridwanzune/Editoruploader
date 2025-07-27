@@ -14,6 +14,17 @@ const getAiClient = (apiKey: string): GoogleGenAI => {
     return new GoogleGenAI({ apiKey });
 };
 
+/**
+ * Cleans citation markers (e.g., [1], [2, 3]) from a string.
+ * @param text The string to clean.
+ * @returns The cleaned string.
+ */
+const cleanCitations = (text: string): string => {
+    if (!text) return "";
+    // This regex removes numeric citation markers like [1], [2, 3], etc. from the text.
+    return text.replace(/\[\d+(,\s*\d+)*\]/g, '').trim();
+}
+
 
 /**
  * Extracts a JSON string from text that might contain markdown or conversational filler.
@@ -78,7 +89,7 @@ Follow these rules for the summary:
             throw new Error("The API returned an empty summary.");
         }
 
-        return summary.trim();
+        return cleanCitations(summary);
 
     } catch (error) {
         console.error("Error generating summary from Gemini:", error);
@@ -110,7 +121,7 @@ export const findHotNews = async (
     ];
 
     const createPrompt = (useSpecificSources: boolean): string => {
-        let prompt = `You are a news discovery agent. Your task is to find up to 5 recent and relevant news topics using Google Search. For each topic, you must generate a compelling headline, a brief summary, and a concise image search query.`;
+        let prompt = `You are a news discovery agent. Your task is to find up to 5 recent and relevant news topics using Google Search. For each topic, you must generate a compelling headline, a brief summary, a concise image search query, and its publication date.`;
 
         const days = params.timeFilter ? params.timeFilter.replace('d', '') : '10';
         prompt += ` Find topics from news published within the last ${days} day(s).`;
@@ -144,7 +155,7 @@ Search for English-language news topics from reputable news sources in Banglades
 **RESPONSE FORMATTING:**
 1.  You MUST return a valid JSON object and nothing else.
 2.  The JSON must be an object with a single key "articles". The value must be an array of objects.
-3.  Each object in the array must have "title" (string, 5-10 words), "summary" (string, 50-70 words), and "imageQuery" (string, 2-4 keywords for an image search) keys.
+3.  Each object in the array must have "title" (string, 5-10 words), "summary" (string, a 50-70 word summary, followed by a line break, 3-5 relevant hashtags, and the source name if available), "imageQuery" (string, 2-4 keywords for an image search), and "publicationDate" (string, format YYYY-MM-DD) keys.
 4.  Do NOT invent or include any URLs.
 5.  **On Failure:** If you find no topics matching the criteria, you MUST return \`{"articles": []}\`. Do not return an error message or any other text.
 
@@ -153,8 +164,9 @@ Example:
   "articles": [
     {
       "title": "Massive Fire Engulfs Dhaka Market Causing Millions in Damage",
-      "summary": "A devastating fire broke out at a popular market in Dhaka, destroying hundreds of shops. Firefighters are battling the blaze, and the cause is under investigation. No casualties have been reported yet, but the financial losses are immense.",
-      "imageQuery": "Dhaka market fire"
+      "summary": "A devastating fire broke out at a popular market in Dhaka, destroying hundreds of shops. Firefighters are battling the blaze, and the cause is under investigation. No casualties have been reported yet, but the financial losses are immense.\\n#DhakaFire #MarketTragedy #BangladeshNews\\nSource: The Daily Star",
+      "imageQuery": "Dhaka market fire",
+      "publicationDate": "2024-08-15"
     }
   ]
 }`;
@@ -178,6 +190,14 @@ Example:
         if (!jsonResponse.articles || !Array.isArray(jsonResponse.articles)) {
              throw new Error("AI did not return articles in the expected format. The response might be empty or malformed.");
         }
+
+        // Clean citations from each article's summary
+        jsonResponse.articles.forEach((article: FoundArticle) => {
+            if (article.summary) {
+                article.summary = cleanCitations(article.summary);
+            }
+        });
+
         return { articles: jsonResponse.articles, groundingMetadata: groundingMetadata as GroundingChunk[] };
     }
 
@@ -262,6 +282,12 @@ If successful, you must return a JSON object with the following structure:
         if (!jsonResponse.headline || !jsonResponse.imageUrls || !Array.isArray(jsonResponse.imageUrls) || jsonResponse.imageUrls.length === 0 || !jsonResponse.summary) {
             throw new Error("AI failed to return all required fields (headline, imageUrls, summary) or imageUrls is empty.");
         }
+
+        // Clean citations from the summary
+        if (jsonResponse.summary) {
+            jsonResponse.summary = cleanCitations(jsonResponse.summary);
+        }
+
         return jsonResponse;
 
     } catch (error) {
