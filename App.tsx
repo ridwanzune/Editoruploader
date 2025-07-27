@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import * as htmlToImage from 'html-to-image';
 import { NewsData, WebhookPayload, FoundArticle, ProcessedArticle, GroundingChunk } from './types';
@@ -15,7 +12,7 @@ import AIPromptModal from './components/AIPromptModal';
 import ImageFinderModal from './components/ImageFinderModal';
 import Instructions from './components/Instructions';
 import { CheckCircleIcon, ExclamationTriangleIcon, LoadingSpinnerIcon, FacebookIcon, EyeIcon, EyeSlashIcon } from './components/icons';
-import { DEFAULT_AUTH_TOKEN, DEFAULT_QUEUE_WEBHOOK_URL, DEFAULT_POST_NOW_WEBHOOK_URL } from './constants';
+import { DEFAULT_AUTH_TOKEN, DEFAULT_QUEUE_WEBHOOK_URL, DEFAULT_POST_NOW_WEBHOOK_URL, DEFAULT_GEMINI_API_KEY } from './constants';
 
 // --- Inlined Login Component ---
 interface LoginProps {
@@ -111,6 +108,7 @@ const App: React.FC = () => {
   const [queueWebhookUrl, setQueueWebhookUrl] = useState(() => localStorage.getItem('queueWebhookUrl') || DEFAULT_QUEUE_WEBHOOK_URL);
   const [postNowWebhookUrl, setPostNowWebhookUrl] = useState(() => localStorage.getItem('postNowWebhookUrl') || DEFAULT_POST_NOW_WEBHOOK_URL);
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('authToken') || DEFAULT_AUTH_TOKEN);
+  const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('geminiApiKey') || DEFAULT_GEMINI_API_KEY);
   
   // Content State (for controlled form)
   const [headline, setHeadline] = useState('');
@@ -163,6 +161,10 @@ const App: React.FC = () => {
     localStorage.setItem('authToken', authToken);
   }, [authToken]);
   
+  useEffect(() => {
+    localStorage.setItem('geminiApiKey', geminiApiKey);
+  }, [geminiApiKey]);
+
   const clearResults = () => {
     setSummary(null);
     setIsApproved(false);
@@ -188,7 +190,7 @@ const App: React.FC = () => {
     // If headline and imageUrl are also provided, just generate the summary (classic manual mode)
     if (headline && imageUrl) {
         try {
-            const generatedSummary = await generateSummary(newsUrl, headline);
+            const generatedSummary = await generateSummary(geminiApiKey, newsUrl, headline);
             setSummary(generatedSummary);
             setImageUrlOptions([imageUrl]); // Set the manual URL as the only option
         } catch (err) {
@@ -200,7 +202,7 @@ const App: React.FC = () => {
     } else {
         // Otherwise, process the URL to get everything (new streamlined manual mode)
         try {
-            const processedData = await processNewsUrl(newsUrl);
+            const processedData = await processNewsUrl(geminiApiKey, newsUrl);
             setHeadline(processedData.headline);
             const firstImage = processedData.imageUrls[0] || '';
             setImageUrl(firstImage);
@@ -213,7 +215,7 @@ const App: React.FC = () => {
             setIsLoading(false);
         }
     }
-  }, [headline, imageUrl, newsUrl]);
+  }, [headline, imageUrl, newsUrl, geminiApiKey]);
 
   // --- Auto Content Finder ---
   const handleFindNewsClick = async (
@@ -230,7 +232,7 @@ const App: React.FC = () => {
     
     try {
         const existingTitles = foundArticles.map(a => a.title);
-        const { articles, groundingMetadata } = await findHotNews({ ...params, existingTitles });
+        const { articles, groundingMetadata } = await findHotNews(geminiApiKey, { ...params, existingTitles });
         setFoundArticles(prev => loadMore ? [...prev, ...articles] : articles);
         setFoundSources(prev => loadMore ? [...prev, ...groundingMetadata] : groundingMetadata);
     } catch (err) {
@@ -263,7 +265,7 @@ const App: React.FC = () => {
 
     try {
       // Auto-search for real images using the query from the found topic
-      const { imageUrls } = await searchForImagesByQuery(article.imageQuery);
+      const { imageUrls } = await searchForImagesByQuery(geminiApiKey, article.imageQuery);
       if (imageUrls && imageUrls.length > 0) {
         // Preload the first image for a smoother transition before updating the state
         const firstImage = imageUrls[0];
@@ -328,7 +330,7 @@ const App: React.FC = () => {
     setIsGeneratingImage(true);
     setError(null);
     try {
-        const generatedImageUrl = await generateAIImage(prompt);
+        const generatedImageUrl = await generateAIImage(geminiApiKey, prompt);
         setImageUrl(generatedImageUrl);
         // Add the new AI image to the list of options, making it the selected one
         setImageUrlOptions(prev => [generatedImageUrl, ...prev.filter(url => !url.startsWith('data:'))]);
@@ -339,7 +341,7 @@ const App: React.FC = () => {
         setIsGeneratingImage(false);
         setIsAIPromptModalOpen(false);
     }
-  }, []);
+  }, [geminiApiKey]);
 
 
   // --- Publishing ---
@@ -442,6 +444,7 @@ const App: React.FC = () => {
         onClose={() => setIsImageFinderOpen(false)}
         headline={headline}
         onSelect={handleSelectImageFromFinder}
+        geminiApiKey={geminiApiKey}
       />
       {isProcessingNews && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col items-center justify-center z-[100]">
@@ -486,6 +489,8 @@ const App: React.FC = () => {
                 onPostNowWebhookUrlChange={setPostNowWebhookUrl}
                 authToken={authToken}
                 onAuthTokenChange={setAuthToken}
+                geminiApiKey={geminiApiKey}
+                onGeminiApiKeyChange={setGeminiApiKey}
               />
 
               <Instructions />

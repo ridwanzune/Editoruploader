@@ -2,13 +2,16 @@ import { GoogleGenAI, Type } from "@google/genai";
 import type { FoundArticle, ProcessedArticle, GroundingChunk } from '../types';
 
 /**
- * Creates a GoogleGenAI client instance using the API key from an environment variable.
- * The `API_KEY` is expected to be available in the execution environment (e.g., Vercel project settings).
+ * Creates a GoogleGenAI client instance using a provided API key.
+ * @param apiKey The Google Gemini API key.
  * @returns An initialized GoogleGenAI client.
+ * @throws An error if the API key is not provided.
  */
-const getAiClient = (): GoogleGenAI => {
-    // The API key MUST be obtained exclusively from the environment variable `process.env.API_KEY`.
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAiClient = (apiKey: string): GoogleGenAI => {
+    if (!apiKey) {
+        throw new Error("Gemini API Key is missing. Please provide it in the settings.");
+    }
+    return new GoogleGenAI({ apiKey });
 };
 
 
@@ -47,8 +50,8 @@ const extractJsonString = (text: string): string => {
 /**
  * Generates a summary for a given news URL. Used for the manual workflow.
  */
-export const generateSummary = async (newsUrl: string, headline: string): Promise<string> => {
-    const ai = getAiClient();
+export const generateSummary = async (apiKey: string, newsUrl: string, headline: string): Promise<string> => {
+    const ai = getAiClient(apiKey);
     try {
         const prompt = `Act as a world-class digital news editor with a strong talent for viral social media engagement.
 Based on the article at ${newsUrl} and the headline "${headline}", create a compelling summary for a social media post.
@@ -91,6 +94,7 @@ Follow these rules for the summary:
  * Implements a fallback mechanism: first searches specific sources, then broader sources if no results.
  */
 export const findHotNews = async (
+    apiKey: string,
     params: { 
         query?: string; 
         region?: 'Bangladesh' | 'International'; 
@@ -98,7 +102,7 @@ export const findHotNews = async (
         timeFilter?: string; // e.g., '1d', '7d', '10d'
     }
 ): Promise<{ articles: FoundArticle[]; groundingMetadata: GroundingChunk[] }> => {
-    const ai = getAiClient();
+    const ai = getAiClient(apiKey);
 
     const bangladeshiEnglishSources = [
         "www.thedailystar.net", "www.dhakatribune.com", "www.theindependentbd.com",
@@ -207,8 +211,8 @@ Example:
 /**
  * Processes a single news URL to extract a headline, multiple image options, and a summary.
  */
-export const processNewsUrl = async (newsUrl: string): Promise<ProcessedArticle> => {
-    const ai = getAiClient();
+export const processNewsUrl = async (apiKey: string, newsUrl: string): Promise<ProcessedArticle> => {
+    const ai = getAiClient(apiKey);
     try {
         const prompt = `
 You are a specialized news processing agent. Your mission is to analyze the content of the provided news article URL and extract specific information in a strict JSON format.
@@ -276,8 +280,8 @@ If successful, you must return a JSON object with the following structure:
 /**
  * Searches for images based on a text query.
  */
-export const searchForImagesByQuery = async (query: string): Promise<{ imageUrls: string[], groundingMetadata: GroundingChunk[] }> => {
-    const ai = getAiClient();
+export const searchForImagesByQuery = async (apiKey: string, query: string): Promise<{ imageUrls: string[], groundingMetadata: GroundingChunk[] }> => {
+    const ai = getAiClient(apiKey);
     try {
         const prompt = `You are an expert image curator using Google Search. Your task is to find up to 9 high-quality, photorealistic images that are directly relevant to the search query: "${query}".
         
@@ -336,8 +340,8 @@ export const searchForImagesByQuery = async (query: string): Promise<{ imageUrls
 /**
  * Generates an image using Imagen from a text prompt.
  */
-export const generateAIImage = async (prompt: string): Promise<string> => {
-    const ai = getAiClient();
+export const generateAIImage = async (apiKey: string, prompt: string): Promise<string> => {
+    const ai = getAiClient(apiKey);
     try {
         const response = await ai.models.generateImages({
             model: 'imagen-3.0-generate-002',

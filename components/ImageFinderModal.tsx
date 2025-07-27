@@ -8,6 +8,7 @@ interface ImageFinderModalProps {
   onClose: () => void;
   headline: string;
   onSelect: (url: string) => void;
+  geminiApiKey: string;
 }
 
 const getKeywordsFromHeadline = (headline: string): string => {
@@ -20,7 +21,7 @@ const getKeywordsFromHeadline = (headline: string): string => {
   return sortedKeywords.slice(0, 3).join(' ') || 'news event';
 };
 
-const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, headline, onSelect }) => {
+const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, headline, onSelect, geminiApiKey }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<string[]>([]);
   const [sources, setSources] = useState<GroundingChunk[]>([]);
@@ -34,7 +35,7 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
     setResults([]);
     setSources([]);
     try {
-      const { imageUrls, groundingMetadata } = await searchForImagesByQuery(searchQuery);
+      const { imageUrls, groundingMetadata } = await searchForImagesByQuery(geminiApiKey, searchQuery);
       setResults(imageUrls);
       setSources(groundingMetadata);
       if (imageUrls.length === 0) {
@@ -45,7 +46,7 @@ const ImageFinderModal: React.FC<ImageFinderModalProps> = ({ isOpen, onClose, he
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [geminiApiKey]);
 
   useEffect(() => {
     if (isOpen) {

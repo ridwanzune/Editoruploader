@@ -2,8 +2,7 @@
 export const DEFAULT_QUEUE_WEBHOOK_URL = 'https://hook.eu2.make.com/mvsz33n18i6dl18xynls7ie9gnoxzghl';
 export const DEFAULT_POST_NOW_WEBHOOK_URL = 'https://hook.eu2.make.com/mvsz33n18i6dl18xynls7ie9gnoxzghl';
 export const DEFAULT_AUTH_TOKEN = 'xR@7!pZ2#qLd$Vm8^tYe&WgC*oUeXsKv'; // Shared auth token for both webhooks
-
-// The Gemini API key is now managed via the `API_KEY` environment variable for security.
+export const DEFAULT_GEMINI_API_KEY = 'AIzaSyDux-4-CMJkuShfs6BTelvvZF-tSVVLvn4'; // Editable in settings
 
 // --- Cloudinary Configuration ---
 // IMPORTANT: For security, we use an UNSIGNED upload preset. 
