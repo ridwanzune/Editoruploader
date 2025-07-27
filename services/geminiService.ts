@@ -350,7 +350,7 @@ export const generateAIImage = async (apiKey: string, prompt: string): Promise<s
             config: {
               numberOfImages: 1,
               outputMimeType: 'image/png',
-              aspectRatio: '16:9', // Generate landscape image
+              aspectRatio: '1:1', // Generate square image to match the preview pane
             },
         });
 
