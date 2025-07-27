@@ -12,6 +12,29 @@ interface NewsFinderModalProps {
   isLoading: boolean;
 }
 
+const formatDateAgo = (dateString?: string): string | null => {
+  if (!dateString) return null;
+
+  // Handles YYYY-MM-DD format by ensuring it's parsed as UTC
+  const date = new Date(`${dateString}T00:00:00Z`);
+  if (isNaN(date.getTime())) return null;
+
+  const now = new Date();
+  
+  // Compare dates only, ignoring time
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfArticleDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+
+  const diffTime = startOfToday.getTime() - startOfArticleDate.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'Future';
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return '1 day ago';
+  return `${diffDays} days ago`;
+};
+
+
 const NewsFinderModal: React.FC<NewsFinderModalProps> = ({ isOpen, onClose, articles, sources, onSelectArticle, onFindNews, isLoading }) => {
   const [query, setQuery] = useState('');
   const [region, setRegion] = useState<'Bangladesh' | 'International'>('Bangladesh');
@@ -90,17 +113,27 @@ const NewsFinderModal: React.FC<NewsFinderModalProps> = ({ isOpen, onClose, arti
             <>
               <ul className="space-y-3">
                 {articles.length > 0 ? (
-                    articles.map((article, index) => (
-                      <li key={`${article.title}-${index}`}>
-                        <button 
-                          onClick={() => onSelectArticle(article)}
-                          className="w-full text-left p-4 bg-white hover:bg-red-100 rounded-none transition-all duration-200 border-2 border-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 hover:shadow-neo-sm"
-                        >
-                          <p className="text-gray-900 mt-1 text-base font-bold">{article.title}</p>
-                          <p className="text-sm text-gray-900/80 mt-2">{article.summary}</p>
-                        </button>
-                      </li>
-                    ))
+                    articles.map((article, index) => {
+                      const dateAgo = formatDateAgo(article.publicationDate);
+                      return (
+                        <li key={`${article.title}-${index}`}>
+                          <button 
+                            onClick={() => onSelectArticle(article)}
+                            className="w-full text-left p-4 bg-white hover:bg-red-100 rounded-none transition-all duration-200 border-2 border-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 hover:shadow-neo-sm"
+                          >
+                            <div className="flex justify-between items-start gap-3">
+                              <p className="text-gray-900 text-base font-bold">{article.title}</p>
+                              {dateAgo && (
+                                <span className="flex-shrink-0 text-xs font-semibold text-gray-800 bg-yellow-300/80 px-2 py-1 border border-gray-900/50 whitespace-nowrap">
+                                  {dateAgo}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-900/80 mt-2">{article.summary}</p>
+                          </button>
+                        </li>
+                      );
+                    })
                 ) : (
                     <div className="text-center text-gray-900/70 py-10">
                         <p className="font-bold">No articles found.</p>
