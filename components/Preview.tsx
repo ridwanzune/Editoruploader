@@ -6,6 +6,7 @@ import ImageOptions from './ImageOptions';
 interface PreviewProps {
     newsData: NewsData | null;
     summary: string | null;
+    onSummaryChange: (value: string) => void;
     onQueue: () => void;
     onPostNow: () => void;
     isLoading: boolean;
@@ -83,6 +84,7 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
   {
     newsData,
     summary,
+    onSummaryChange,
     onQueue,
     onPostNow,
     isLoading,
@@ -253,14 +255,13 @@ const Preview: React.ForwardRefRenderFunction<HTMLDivElement, PreviewProps> = (
       )}
 
       <div>
-        <h4 className="text-lg font-bold text-gray-900 mb-2">AI Generated Summary:</h4>
-        <div className="bg-white p-4 border-2 border-gray-900 min-h-[100px]">
-          {summary ? (
-             <p className="text-gray-700 whitespace-pre-wrap">{summary}</p>
-          ) : (
-            <p className="text-gray-500">No summary generated yet.</p>
-          )}
-        </div>
+        <h4 className="text-lg font-bold text-gray-900 mb-2">AI Generated Caption:</h4>
+        <textarea
+            className="w-full bg-white p-4 border-2 border-gray-900 min-h-[150px] text-gray-700 whitespace-pre-wrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition"
+            value={summary || ''}
+            onChange={(e) => onSummaryChange(e.target.value)}
+            placeholder="No caption generated yet."
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t-2 border-black/20">
